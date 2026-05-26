@@ -19,6 +19,7 @@ extern "C" {
 #include "esp_log.h"
 #include "rom/ets_sys.h"
 #include "io_configure.h"
+#include "esp_timer.h"
 
 #define LIS3DH_ADDR     0x19
 

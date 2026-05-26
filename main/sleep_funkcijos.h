@@ -36,4 +36,4 @@ esp_err_t sleep_vogiamas(uint8_t seconds);
 }
 #endif
 
-#endif /* __SLEEP_FUNKCIJOS_H__ */
+#endif

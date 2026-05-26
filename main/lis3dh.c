@@ -4,7 +4,7 @@ static const char *TAG = "LIS3DH";
 static i2c_master_dev_handle_t dev;
 
 static uint8_t src = 0;
-
+static int64_t pirmasInterrupt =999999999999;
 static TaskHandle_t interrupt_task_handle = NULL;
 
 esp_err_t write_reg(uint8_t reg, uint8_t val)
@@ -137,7 +137,21 @@ void interrupt_task(void *arg)
         while(!gpio_get_level(INTERRUPT_PIN))vTaskDelay(pdMS_TO_TICKS(500));
         ESP_LOGI(TAG,"LIS3DH interrupt");
 
-        vogiamas=true;/// NOTE reikia funkcijos, kuri atsižvelgia, ar buvo kelių s intervalai
+        
+        
+        if(pirmasInterrupt==999999999999)pirmasInterrupt=esp_timer_get_time(); /// pirmam kartui
+
+        if((esp_timer_get_time() - pirmasInterrupt) > 30 * 1000000) //// jei 30s tarpas tarp interruptu
+        {
+            pirmasInterrupt=esp_timer_get_time();
+        }
+        
+        else if((esp_timer_get_time() - pirmasInterrupt) > 1 * 1000000) //// jei 1s tarpas tarp interruptu
+        {
+            vogiamas=true; /// jei tarpas tarp dvieju interruptu >1s <30s
+            ESP_LOGI(TAG,"VOGIAMAS interrupt <<<<<<<<<<<<<<<<<<<");
+        }
+        
 
         if (g_sim_handle) { /// Įspėja testavimo atveju sistemas, kad gautas interrupt
              xTaskNotifyGive(g_sim_handle);
